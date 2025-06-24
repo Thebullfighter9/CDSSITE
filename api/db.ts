@@ -80,10 +80,93 @@ const defaultDB: Database = {
     tasksCompleted: "0",
     teamRating: "0",
   },
-  employees: [],
-  timesheets: [],
+  employees: [
+    {
+      id: "1",
+      name: "Alex Chen",
+      role: "Founder & Lead Developer",
+      department: "Engineering",
+      email: "alex@cds.com",
+      specialties: [
+        "Game Engine Development",
+        "AI Programming",
+        "System Architecture",
+      ],
+      icon: "Code",
+      color: "neon-cyan",
+      createdAt: now,
+    },
+    {
+      id: "2",
+      name: "Maya Rodriguez",
+      role: "Creative Director",
+      department: "Design",
+      email: "maya@cds.com",
+      specialties: ["Game Design", "UI/UX", "Art Direction"],
+      icon: "Palette",
+      color: "neon-blue",
+      createdAt: now,
+    },
+    {
+      id: "3",
+      name: "Jordan Kim",
+      role: "Audio Director",
+      department: "Audio",
+      email: "jordan@cds.com",
+      specialties: [
+        "Sound Design",
+        "Music Composition",
+        "Audio Programming",
+      ],
+      icon: "Music",
+      color: "neon-purple",
+      createdAt: now,
+    },
+    {
+      id: "4",
+      name: "Sam Wilson",
+      role: "Technical Lead",
+      department: "Engineering",
+      email: "sam@cds.com",
+      specialties: [
+        "Backend Systems",
+        "DevOps",
+        "Performance Optimization",
+      ],
+      icon: "Rocket",
+      color: "neon-cyan",
+      createdAt: now,
+    },
+  ],
+  timesheets: [
+    {
+      id: "1",
+      employeeId: "1",
+      date: now.split("T")[0],
+      clockIn: "09:00",
+      clockOut: "17:00",
+      createdAt: now,
+    },
+  ],
   tasks: [],
-  calendar: [],
+  calendar: [
+    {
+      id: "1",
+      title: "Weekly Sync",
+      date: now.split("T")[0],
+      description: "Team standup meeting",
+      createdAt: now,
+    },
+    {
+      id: "2",
+      title: "Release Deadline",
+      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      description: "Version 1.0 release",
+      createdAt: now,
+    },
+  ],
 };
 
 export async function readDB(): Promise<Database> {
