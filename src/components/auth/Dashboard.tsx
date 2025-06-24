@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   LogOut,
@@ -25,6 +25,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProjectManager } from "@/components/admin/ProjectManager";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { ContactManager } from "@/components/admin/ContactManager";
+import { StatsManager } from "@/components/admin/StatsManager";
+import ApiService, { SiteStats, Project } from "@/services/api";
 
 const dashboardCards = [
   {
@@ -92,42 +94,32 @@ const adminCards = [
   },
 ];
 
-const recentActivity = [
-  {
-    action: "Completed task",
-    target: "UI Design for Neon Runner",
-    time: "2 hours ago",
-    type: "task",
-  },
-  {
-    action: "Started sprint",
-    target: "Circuit Maze v2.0",
-    time: "1 day ago",
-    type: "sprint",
-  },
-  {
-    action: "Meeting attended",
-    target: "Weekly Team Standup",
-    time: "2 days ago",
-    type: "meeting",
-  },
-  {
-    action: "Code review",
-    target: "Player Movement System",
-    time: "3 days ago",
-    type: "review",
-  },
-];
-
-const projectProgress = [
-  { name: "Neon Runner", progress: 75, status: "In Progress" },
-  { name: "Circuit Maze Update", progress: 45, status: "Development" },
-  { name: "Dream Forge Concept", progress: 20, status: "Planning" },
-];
-
 export function Dashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [stats, setStats] = useState<SiteStats | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    ApiService.getStats().then(setStats);
+    ApiService.getProjects().then(setProjects);
+  }, []);
+
+  const getProgress = (status: Project["status"]): number => {
+    switch (status) {
+      case "Released":
+        return 100;
+      case "In Development":
+        return 50;
+      case "Concept":
+        return 10;
+      case "On Hold":
+        return 25;
+      default:
+        return 0;
+    }
+  };
 
   if (!user) return null;
 
@@ -314,9 +306,9 @@ export function Dashboard() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {projectProgress.map((project, index) => (
+                      {projects.map((project, index) => (
                         <motion.div
-                          key={project.name}
+                          key={project.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{
@@ -326,7 +318,7 @@ export function Dashboard() {
                           className="space-y-2"
                         >
                           <div className="flex items-center justify-between">
-                            <h4 className="font-medium">{project.name}</h4>
+                            <h4 className="font-medium">{project.title}</h4>
                             <div className="flex items-center space-x-2">
                               <Badge
                                 variant="outline"
@@ -335,12 +327,12 @@ export function Dashboard() {
                                 {project.status}
                               </Badge>
                               <span className="text-sm text-foreground/70">
-                                {project.progress}%
+                                {getProgress(project.status)}%
                               </span>
                             </div>
                           </div>
                           <Progress
-                            value={project.progress}
+                            value={getProgress(project.status)}
                             className="h-2 bg-circuit-dark"
                           />
                         </motion.div>
@@ -363,13 +355,21 @@ export function Dashboard() {
                   </h2>
                   <div className="space-y-4">
                     {[
-                      { label: "Hours This Week", value: "32", icon: Clock },
+                      {
+                        label: "Hours This Week",
+                        value: stats?.hoursThisWeek || "-",
+                        icon: Clock,
+                      },
                       {
                         label: "Tasks Completed",
-                        value: "18",
+                        value: stats?.tasksCompleted || "-",
                         icon: CheckCircle,
                       },
-                      { label: "Team Rating", value: "4.8", icon: Star },
+                      {
+                        label: "Team Rating",
+                        value: stats?.teamRating || "-",
+                        icon: Star,
+                      },
                     ].map((stat, index) => (
                       <motion.div
                         key={stat.label}
@@ -412,17 +412,22 @@ export function Dashboard() {
                   <Card className="bg-card/40 glass border-neon-cyan/20">
                     <CardContent className="p-4">
                       <div className="space-y-4">
-                        {recentActivity.map((activity, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.4,
-                              delay: 0.6 + index * 0.1,
-                            }}
-                            className="flex items-start space-x-3 pb-3 border-b border-neon-cyan/10 last:border-b-0 last:pb-0"
-                          >
+                        {recentActivity.length === 0 ? (
+                          <p className="text-sm text-foreground/60">
+                            No activity yet.
+                          </p>
+                        ) : (
+                          recentActivity.map((activity, index) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.4,
+                                delay: 0.6 + index * 0.1,
+                              }}
+                              className="flex items-start space-x-3 pb-3 border-b border-neon-cyan/10 last:border-b-0 last:pb-0"
+                            >
                             <div className="w-2 h-2 bg-neon-cyan rounded-full mt-2 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm">
@@ -438,7 +443,8 @@ export function Dashboard() {
                               </p>
                             </div>
                           </motion.div>
-                        ))}
+                          ))
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -463,18 +469,7 @@ export function Dashboard() {
               </TabsContent>
 
               <TabsContent value="settings">
-                <Card className="bg-card/40 glass border-neon-cyan/20">
-                  <CardContent className="p-12 text-center">
-                    <Settings className="h-16 w-16 text-neon-cyan/50 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-neon-cyan mb-2">
-                      Settings Panel
-                    </h3>
-                    <p className="text-foreground/70">
-                      System settings and configuration options will be
-                      available here.
-                    </p>
-                  </CardContent>
-                </Card>
+                <StatsManager />
               </TabsContent>
             </>
           )}
