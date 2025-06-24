@@ -124,12 +124,12 @@
 @layer components {
   /* Neon glow effects */
   .neon-glow {
-    filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 15px currentColor);
+    filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor);
   }
 
   .neon-glow-strong {
-    filter: drop-shadow(0 0 10px currentColor)
-      drop-shadow(0 0 30px currentColor) drop-shadow(0 0 50px currentColor);
+    filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 8px currentColor)
+      drop-shadow(0 0 12px currentColor);
   }
 
   /* Circuit-style borders */
