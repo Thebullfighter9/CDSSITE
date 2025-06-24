@@ -26,6 +26,8 @@ import { ProjectManager } from "@/components/admin/ProjectManager";
 import { NewsManager } from "@/components/admin/NewsManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { StatsManager } from "@/components/admin/StatsManager";
+import { TimesheetManager } from "@/components/admin/TimesheetManager";
+import { TeamCalendar } from "@/components/admin/TeamCalendar";
 import ApiService, { SiteStats, Project } from "@/services/api";
 
 const dashboardCards = [
@@ -83,6 +85,22 @@ const adminCards = [
     color: "neon-purple",
     action: "Manage Contacts",
     tab: "contacts",
+  },
+  {
+    title: "Timesheets",
+    icon: Clock,
+    description: "Manage employee hours",
+    color: "neon-cyan",
+    action: "Manage Timesheets",
+    tab: "timesheets",
+  },
+  {
+    title: "Team Calendar",
+    icon: Calendar,
+    description: "Manage meetings and deadlines",
+    color: "neon-blue",
+    action: "Manage Calendar",
+    tab: "calendar",
   },
   {
     title: "Settings",
@@ -169,13 +187,15 @@ export function Dashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             {isAdmin && (
               <>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
                 <TabsTrigger value="news">News</TabsTrigger>
                 <TabsTrigger value="contacts">Contacts</TabsTrigger>
+                <TabsTrigger value="timesheets">Timesheets</TabsTrigger>
+                <TabsTrigger value="calendar">Calendar</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </>
             )}
@@ -466,6 +486,14 @@ export function Dashboard() {
 
               <TabsContent value="contacts">
                 <ContactManager />
+              </TabsContent>
+
+              <TabsContent value="timesheets">
+                <TimesheetManager />
+              </TabsContent>
+
+              <TabsContent value="calendar">
+                <TeamCalendar />
               </TabsContent>
 
               <TabsContent value="settings">

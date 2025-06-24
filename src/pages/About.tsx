@@ -10,6 +10,8 @@ import {
   Lightbulb,
   Rocket,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import ApiService from "@/services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -40,40 +42,7 @@ const values = [
   },
 ];
 
-const team = [
-  {
-    name: "Alex Chen",
-    role: "Founder & Lead Developer",
-    specialties: [
-      "Game Engine Development",
-      "AI Programming",
-      "System Architecture",
-    ],
-    icon: Code,
-    color: "neon-cyan",
-  },
-  {
-    name: "Maya Rodriguez",
-    role: "Creative Director",
-    specialties: ["Game Design", "UI/UX", "Art Direction"],
-    icon: Palette,
-    color: "neon-blue",
-  },
-  {
-    name: "Jordan Kim",
-    role: "Audio Director",
-    specialties: ["Sound Design", "Music Composition", "Audio Programming"],
-    icon: Music,
-    color: "neon-purple",
-  },
-  {
-    name: "Sam Wilson",
-    role: "Technical Lead",
-    specialties: ["Backend Systems", "DevOps", "Performance Optimization"],
-    icon: Rocket,
-    color: "neon-cyan",
-  },
-];
+const iconMap: Record<string, any> = { Code, Palette, Music, Rocket };
 
 const milestones = [
   {
@@ -104,6 +73,11 @@ const milestones = [
 ];
 
 export default function About() {
+  const [team, setTeam] = useState<any[]>([]);
+
+  useEffect(() => {
+    ApiService.getEmployees().then(setTeam);
+  }, []);
   return (
     <Layout>
       {/* Hero Section */}
@@ -254,14 +228,16 @@ export default function About() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
+            {team.map((member, index) => {
+              const Icon = iconMap[member.icon as string] || Code;
+              return (
+                <motion.div
+                  key={member.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
                 <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 group">
                   <CardContent className="p-6 text-center">
                     <div className="relative mb-6">
@@ -269,9 +245,7 @@ export default function About() {
                         className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-${member.color} to-neon-blue p-1`}
                       >
                         <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-                          <member.icon
-                            className={`h-10 w-10 text-${member.color}`}
-                          />
+                          <Icon className={`h-10 w-10 text-${member.color}`} />
                         </div>
                       </div>
                       <div
@@ -300,7 +274,8 @@ export default function About() {
                   </CardContent>
                 </Card>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
