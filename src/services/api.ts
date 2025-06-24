@@ -42,11 +42,21 @@ export interface ContactSubmission {
   status: "New" | "Read" | "Responded" | "Resolved";
 }
 
+export interface SiteStats {
+  gamesDeveloped: string;
+  teamMembers: string;
+  yearsExperience: string;
+  hoursThisWeek: string;
+  tasksCompleted: string;
+  teamRating: string;
+}
+
 // Local storage keys
 const STORAGE_KEYS = {
   PROJECTS: "cds_projects",
   NEWS: "cds_news",
   CONTACTS: "cds_contacts",
+  STATS: "cds_stats",
 } as const;
 
 // Initialize default data
@@ -191,6 +201,15 @@ With our team now at 15 talented individuals, we're better positioned than ever 
     updatedAt: "2024-01-05T09:00:00Z",
   },
 ];
+
+const DEFAULT_STATS: SiteStats = {
+  gamesDeveloped: "0",
+  teamMembers: "0",
+  yearsExperience: "0",
+  hoursThisWeek: "0",
+  tasksCompleted: "0",
+  teamRating: "0",
+};
 
 // API Functions
 class ApiService {
@@ -339,6 +358,23 @@ class ApiService {
     contacts[index].status = status;
     localStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contacts));
     return true;
+  }
+
+  // Stats API
+  static async getStats(): Promise<SiteStats> {
+    const stored = localStorage.getItem(STORAGE_KEYS.STATS);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(DEFAULT_STATS));
+    return DEFAULT_STATS;
+  }
+
+  static async updateStats(updates: Partial<SiteStats>): Promise<SiteStats> {
+    const current = await this.getStats();
+    const newStats = { ...current, ...updates };
+    localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(newStats));
+    return newStats;
   }
 }
 

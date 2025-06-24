@@ -1,8 +1,16 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import ApiService, { SiteStats } from "@/services/api";
 
 export function HeroSection() {
+  const [stats, setStats] = useState<SiteStats | null>(null);
+
+  useEffect(() => {
+    ApiService.getStats().then(setStats);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background */}
@@ -118,9 +126,9 @@ export function HeroSection() {
             className="grid grid-cols-3 gap-8 pt-16 max-w-md mx-auto"
           >
             {[
-              { label: "Games Developed", value: "5+" },
-              { label: "Team Members", value: "12" },
-              { label: "Years Experience", value: "8" },
+              { label: "Games Developed", value: stats?.gamesDeveloped || "-" },
+              { label: "Team Members", value: stats?.teamMembers || "-" },
+              { label: "Years Experience", value: stats?.yearsExperience || "-" },
             ].map((stat, index) => (
               <div key={stat.label} className="text-center">
                 <motion.div
