@@ -62,6 +62,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // CircuitDreamsStudios brand colors
+        neon: {
+          cyan: "hsl(var(--neon-cyan))",
+          blue: "hsl(var(--neon-blue))",
+          purple: "hsl(var(--neon-purple))",
+        },
+        circuit: {
+          dark: "hsl(var(--circuit-dark))",
+          darker: "hsl(var(--circuit-darker))",
+          light: "hsl(var(--circuit-light))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -85,10 +96,60 @@ export default {
             height: "0",
           },
         },
+        "glow-pulse": {
+          "0%, 100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+          "50%": {
+            opacity: "0.8",
+            transform: "scale(1.05)",
+          },
+        },
+        "circuit-flow": {
+          "0%": {
+            transform: "translateX(-100%)",
+            opacity: "0",
+          },
+          "50%": {
+            opacity: "1",
+          },
+          "100%": {
+            transform: "translateX(100%)",
+            opacity: "0",
+          },
+        },
+        float: {
+          "0%, 100%": {
+            transform: "translateY(0px)",
+          },
+          "50%": {
+            transform: "translateY(-10px)",
+          },
+        },
+        "neon-glow": {
+          "0%, 100%": {
+            filter: "drop-shadow(0 0 5px currentColor)",
+          },
+          "50%": {
+            filter:
+              "drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "circuit-flow": "circuit-flow 3s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
+        "neon-glow": "neon-glow 2s ease-in-out infinite",
+      },
+      backgroundImage: {
+        "circuit-pattern":
+          "linear-gradient(45deg, transparent 40%, rgba(0, 255, 255, 0.1) 50%, transparent 60%)",
+        "neon-gradient":
+          "linear-gradient(135deg, #00ffff 0%, #3a9bfd 50%, #b84cff 100%)",
       },
     },
   },
