@@ -70,7 +70,7 @@ export function HeroSection() {
             className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
           >
             <span className="block gradient-text">Where Dreams</span>
-            <span className="block text-neon-cyan neon-glow">Become Games</span>
+            <span className="block text-neon-cyan">Become Games</span>
           </motion.h1>
 
           {/* Subtitle */}
