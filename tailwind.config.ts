@@ -129,11 +129,11 @@ export default {
         },
         "neon-glow": {
           "0%, 100%": {
-            filter: "drop-shadow(0 0 5px currentColor)",
+            filter: "drop-shadow(0 0 2px currentColor)",
           },
           "50%": {
             filter:
-              "drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor)",
+              "drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor)",
           },
         },
       },
