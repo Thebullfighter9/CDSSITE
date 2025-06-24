@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Code, Users, Zap, Target, Gamepad2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import ApiService, { Project } from "@/services/api";
 
 const features = [
   {
@@ -32,34 +34,20 @@ const features = [
   },
 ];
 
-const showcase = [
-  {
-    title: "Neon Runner",
-    category: "Action Platformer",
-    description:
-      "A cyberpunk-inspired platformer with fluid movement and neon aesthetics.",
-    status: "In Development",
-    color: "neon-cyan",
-  },
-  {
-    title: "Circuit Maze",
-    category: "Puzzle Game",
-    description:
-      "Mind-bending puzzles in a digital world where logic meets creativity.",
-    status: "Released",
-    color: "neon-blue",
-  },
-  {
-    title: "Dream Forge",
-    category: "RPG Adventure",
-    description:
-      "An epic journey through mystical realms with deep character progression.",
-    status: "Concept",
-    color: "neon-purple",
-  },
-];
+const colorOrder = ["neon-cyan", "neon-blue", "neon-purple"] as const;
+const colorStyles: Record<(typeof colorOrder)[number], string> = {
+  "neon-cyan": "text-neon-cyan border-neon-cyan hover:bg-neon-cyan",
+  "neon-blue": "text-neon-blue border-neon-blue hover:bg-neon-blue",
+  "neon-purple": "text-neon-purple border-neon-purple hover:bg-neon-purple",
+};
 
 export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    ApiService.getProjects().then(setProjects);
+  }, []);
+
   return (
     <Layout>
       <HeroSection />
@@ -132,19 +120,21 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {showcase.map((project, index) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 overflow-hidden">
-                  <div className="aspect-video bg-gradient-to-br from-neon-cyan/20 via-neon-blue/20 to-neon-purple/20 relative overflow-hidden">
-                    <div className="absolute inset-0 circuit-bg opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
-                    <div className="absolute top-4 right-4">
+            {projects.map((project, index) => {
+              const color = colorOrder[index % colorOrder.length];
+              return (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="group"
+                >
+                  <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 overflow-hidden">
+                    <div className="aspect-video bg-gradient-to-br from-neon-cyan/20 via-neon-blue/20 to-neon-purple/20 relative overflow-hidden">
+                      <div className="absolute inset-0 circuit-bg opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
+                      <div className="absolute top-4 right-4">
                       <span
                         className={`px-3 py-1 text-xs font-medium rounded-full ${
                           project.status === "Released"
@@ -159,15 +149,13 @@ export default function Home() {
                     </div>
                     <div className="absolute bottom-4 left-4">
                       <Trophy
-                        className={`h-8 w-8 text-${project.color} group-hover:animate-float`}
+                        className={`h-8 w-8 ${colorStyles[color].split(" ")[0]} group-hover:animate-float`}
                       />
                     </div>
                   </div>
                   <CardContent className="p-6">
                     <div className="mb-2">
-                      <span
-                        className={`text-sm text-${project.color} font-medium`}
-                      >
+                      <span className={`text-sm ${colorStyles[color].split(" ")[0]} font-medium`}>
                         {project.category}
                       </span>
                     </div>
@@ -179,14 +167,15 @@ export default function Home() {
                     </p>
                     <Button
                       variant="outline"
-                      className={`w-full border-${project.color} text-${project.color} hover:bg-${project.color} hover:text-black transition-all duration-300`}
+                      className={`w-full ${colorStyles[color]} hover:text-black transition-all duration-300`}
                     >
                       Learn More
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

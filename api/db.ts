@@ -14,8 +14,62 @@ interface Database {
   calendar: any[];
 }
 
+const now = new Date().toISOString();
+
 const defaultDB: Database = {
-  projects: [],
+  projects: [
+    {
+      id: "1",
+      title: "Neon Runner",
+      category: "Action Platformer",
+      description:
+        "A cyberpunk-inspired platformer with fluid movement and neon aesthetics.",
+      status: "In Development",
+      tags: [],
+      releaseDate: "",
+      imageUrl: "",
+      demoUrl: "",
+      features: [],
+      teamMembers: [],
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "system",
+    },
+    {
+      id: "2",
+      title: "Circuit Maze",
+      category: "Puzzle Game",
+      description:
+        "Mind-bending puzzles in a digital world where logic meets creativity.",
+      status: "Released",
+      tags: [],
+      releaseDate: "",
+      imageUrl: "",
+      demoUrl: "",
+      features: [],
+      teamMembers: [],
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "system",
+    },
+    {
+      id: "3",
+      title: "Dream Forge",
+      category: "RPG Adventure",
+      description:
+        "An epic journey through mystical realms with deep character progression.",
+      status: "Concept",
+      tags: [],
+      releaseDate: "",
+      imageUrl: "",
+      demoUrl: "",
+      features: [],
+      teamMembers: [],
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "system",
+    },
+  ],
   news: [],
   contacts: [],
   stats: {
