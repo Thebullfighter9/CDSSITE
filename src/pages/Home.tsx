@@ -134,52 +134,55 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="group"
                   >
-                  <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 overflow-hidden">
-                    <div className="aspect-video bg-gradient-to-br from-neon-cyan/20 via-neon-blue/20 to-neon-purple/20 relative overflow-hidden">
-                      <div className="absolute inset-0 circuit-bg opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
-                      <div className="absolute top-4 right-4">
-                      <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                          project.status === "Released"
-                            ? "bg-green-500/20 text-green-400"
-                            : project.status === "In Development"
-                              ? "bg-yellow-500/20 text-yellow-400"
-                              : "bg-blue-500/20 text-blue-400"
-                        }`}
-                      >
-                        {project.status}
-                      </span>
-                    </div>
-                    <div className="absolute bottom-4 left-4">
-                      <Trophy
-                        className={`h-8 w-8 ${colorStyles[color].split(" ")[0]} group-hover:animate-float`}
-                      />
-                    </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="mb-2">
-                      <span className={`text-sm ${colorStyles[color].split(" ")[0]} font-medium`}>
-                        {project.category}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-3">
-                      {project.title}
-                    </h3>
-                    <p className="text-foreground/70 mb-4">
-                      {project.description}
-                    </p>
-                    <Button
-                      variant="outline"
-                      className={`w-full ${colorStyles[color]} hover:text-black transition-all duration-300`}
-                    >
-                      Learn More
-                    </Button>
-                  </CardContent>
-                </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+                    <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 overflow-hidden">
+                      <div className="aspect-video bg-gradient-to-br from-neon-cyan/20 via-neon-blue/20 to-neon-purple/20 relative overflow-hidden">
+                        <div className="absolute inset-0 circuit-bg opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
+                        <div className="absolute top-4 right-4">
+                          <span
+                            className={`px-3 py-1 text-xs font-medium rounded-full ${
+                              project.status === "Released"
+                                ? "bg-green-500/20 text-green-400"
+                                : project.status === "In Development"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : "bg-blue-500/20 text-blue-400"
+                            }`}
+                          >
+                            {project.status}
+                          </span>
+                        </div>
+                        <div className="absolute bottom-4 left-4">
+                          <Trophy
+                            className={`h-8 w-8 ${colorStyles[color].split(" ")[0]} group-hover:animate-float`}
+                          />
+                        </div>
+                      </div>
+                      <CardContent className="p-6">
+                        <div className="mb-2">
+                          <span
+                            className={`text-sm ${colorStyles[color].split(" ")[0]} font-medium`}
+                          >
+                            {project.category}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground mb-3">
+                          {project.title}
+                        </h3>
+                        <p className="text-foreground/70 mb-4">
+                          {project.description}
+                        </p>
+                        <Button
+                          variant="outline"
+                          className={`w-full ${colorStyles[color]} hover:text-black transition-all duration-300`}
+                        >
+                          Learn More
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
