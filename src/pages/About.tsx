@@ -227,22 +227,25 @@ export default function About() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => {
-              const Icon = iconMap[member.icon as string] || Code;
-              return (
-                <motion.div
-                  key={member.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="relative mb-6">
-                      <div
-                        className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-${member.color} to-neon-blue p-1`}
+          {team.length === 0 ? (
+            <p className="text-foreground/70 text-center">No Team Members Yet</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {team.map((member, index) => {
+                const Icon = iconMap[member.icon as string] || Code;
+                return (
+                  <motion.div
+                    key={member.name}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                  <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 group">
+                    <CardContent className="p-6 text-center">
+                      <div className="relative mb-6">
+                        <div
+                          className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-${member.color} to-neon-blue p-1`}
                       >
                         <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
                           <Icon className={`h-10 w-10 text-${member.color}`} />
@@ -274,9 +277,10 @@ export default function About() {
                   </CardContent>
                 </Card>
               </motion.div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

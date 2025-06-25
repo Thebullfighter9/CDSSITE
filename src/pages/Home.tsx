@@ -119,18 +119,21 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {projects.map((project, index) => {
-              const color = colorOrder[index % colorOrder.length];
-              return (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  className="group"
-                >
+          {projects.length === 0 ? (
+            <p className="text-foreground/70 text-center">No Projects Yet</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {projects.map((project, index) => {
+                const color = colorOrder[index % colorOrder.length];
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    className="group"
+                  >
                   <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 overflow-hidden">
                     <div className="aspect-video bg-gradient-to-br from-neon-cyan/20 via-neon-blue/20 to-neon-purple/20 relative overflow-hidden">
                       <div className="absolute inset-0 circuit-bg opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
