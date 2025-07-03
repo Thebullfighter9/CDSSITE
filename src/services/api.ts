@@ -51,16 +51,100 @@ export interface SiteStats {
 const BASE = "";
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = localStorage.getItem("cds_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
     body: options?.body ? JSON.stringify(options.body) : undefined,
   });
-  if (!res.ok) throw new Error(res.statusText);
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      // Unauthorized - clear token and redirect to login
+      localStorage.removeItem("cds_token");
+      localStorage.removeItem("cds_user");
+      window.location.href = "/employee-portal";
+      throw new Error("Authentication required");
+    }
+    throw new Error(res.statusText);
+  }
   return res.json() as Promise<T>;
 }
 
 class ApiService {
+  // Authentication
+  static async login(email: string, password: string) {
+    return request<{ token: string; user: any }>(
+      `${BASE}/api/auth?action=login`,
+      {
+        method: "POST",
+        body: { email, password },
+      },
+    );
+  }
+
+  static async getCurrentUser() {
+    return request<any>(`${BASE}/api/auth?action=me`);
+  }
+
+  static async setupCEO() {
+    return request<{ message: string }>(`${BASE}/api/auth?action=setup-ceo`, {
+      method: "POST",
+    });
+  }
+
+  static async registerUser(userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    position: string;
+  }) {
+    return request<any>(`${BASE}/api/auth?action=register`, {
+      method: "POST",
+      body: userData,
+    });
+  }
+
+  // Users
+  static getUsers() {
+    return request<any[]>(`${BASE}/api/users`);
+  }
+
+  static createUser(userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    position: string;
+  }) {
+    return request<any>(`${BASE}/api/users`, {
+      method: "POST",
+      body: userData,
+    });
+  }
+
+  static updateUser(id: string, updates: any) {
+    return request<any>(`${BASE}/api/users?id=${id}`, {
+      method: "PUT",
+      body: updates,
+    });
+  }
+
+  static deleteUser(id: string) {
+    return request<{ message: string }>(`${BASE}/api/users?id=${id}`, {
+      method: "DELETE",
+    });
+  }
+
   // Projects
   static getProjects() {
     return request<Project[]>(`${BASE}/api/projects`);

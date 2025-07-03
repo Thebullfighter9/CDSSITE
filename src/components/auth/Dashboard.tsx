@@ -141,7 +141,7 @@ export function Dashboard() {
 
   if (!user) return null;
 
-  const isAdmin = user.role === "Admin";
+  const isAdmin = user.isAdmin || ["CEO", "Admin"].includes(user.role);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-circuit-darker">
@@ -162,7 +162,7 @@ export function Dashboard() {
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-foreground/60">
-                    {user.role} • {user.department}
+                    {user.role} • {user.position}
                   </p>
                   {isAdmin && (
                     <Badge className="text-xs bg-neon-purple/20 text-neon-purple border-neon-purple/30">
@@ -448,21 +448,21 @@ export function Dashboard() {
                               }}
                               className="flex items-start space-x-3 pb-3 border-b border-neon-cyan/10 last:border-b-0 last:pb-0"
                             >
-                            <div className="w-2 h-2 bg-neon-cyan rounded-full mt-2 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm">
-                                <span className="font-medium text-neon-cyan">
-                                  {activity.action}
-                                </span>{" "}
-                                <span className="text-foreground/80">
-                                  {activity.target}
-                                </span>
-                              </p>
-                              <p className="text-xs text-foreground/60 mt-1">
-                                {activity.time}
-                              </p>
-                            </div>
-                          </motion.div>
+                              <div className="w-2 h-2 bg-neon-cyan rounded-full mt-2 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm">
+                                  <span className="font-medium text-neon-cyan">
+                                    {activity.action}
+                                  </span>{" "}
+                                  <span className="text-foreground/80">
+                                    {activity.target}
+                                  </span>
+                                </p>
+                                <p className="text-xs text-foreground/60 mt-1">
+                                  {activity.time}
+                                </p>
+                              </div>
+                            </motion.div>
                           ))
                         )}
                       </div>

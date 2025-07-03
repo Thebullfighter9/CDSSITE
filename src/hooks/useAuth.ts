@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import ApiService from "@/services/api";
 
 interface User {
   id: string;
   email: string;
   name: string;
   role: string;
-  department: string;
+  position: string;
+  isAdmin: boolean;
 }
 
 interface AuthState {
@@ -13,40 +15,6 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
 }
-
-// Mock user data - replace with real API calls
-const MOCK_USERS: Record<string, { password: string; user: User }> = {
-  "admin@circuitdreamsstudios.com": {
-    password: "admin123",
-    user: {
-      id: "1",
-      email: "admin@circuitdreamsstudios.com",
-      name: "Alex Chen",
-      role: "Admin",
-      department: "Management",
-    },
-  },
-  "dev@circuitdreamsstudios.com": {
-    password: "dev123",
-    user: {
-      id: "2",
-      email: "dev@circuitdreamsstudios.com",
-      name: "Maya Rodriguez",
-      role: "Developer",
-      department: "Engineering",
-    },
-  },
-  "designer@circuitdreamsstudios.com": {
-    password: "design123",
-    user: {
-      id: "3",
-      email: "designer@circuitdreamsstudios.com",
-      name: "Jordan Kim",
-      role: "Designer",
-      department: "Creative",
-    },
-  },
-};
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
@@ -57,8 +25,10 @@ export function useAuth() {
 
   useEffect(() => {
     // Check for existing session
+    const token = localStorage.getItem("cds_token");
     const storedUser = localStorage.getItem("cds_user");
-    if (storedUser) {
+
+    if (token && storedUser) {
       try {
         const user = JSON.parse(storedUser);
         setAuthState({
@@ -66,7 +36,37 @@ export function useAuth() {
           isLoading: false,
           isAuthenticated: true,
         });
+
+        // Verify token is still valid by fetching current user
+        ApiService.getCurrentUser()
+          .then((currentUser) => {
+            const updatedUser = {
+              id: currentUser.id,
+              email: currentUser.email,
+              name: currentUser.name,
+              role: currentUser.role,
+              position: currentUser.position,
+              isAdmin: currentUser.isAdmin,
+            };
+            localStorage.setItem("cds_user", JSON.stringify(updatedUser));
+            setAuthState({
+              user: updatedUser,
+              isLoading: false,
+              isAuthenticated: true,
+            });
+          })
+          .catch(() => {
+            // Token invalid, clear auth
+            localStorage.removeItem("cds_token");
+            localStorage.removeItem("cds_user");
+            setAuthState({
+              user: null,
+              isLoading: false,
+              isAuthenticated: false,
+            });
+          });
       } catch {
+        localStorage.removeItem("cds_token");
         localStorage.removeItem("cds_user");
         setAuthState({
           user: null,
@@ -89,29 +89,39 @@ export function useAuth() {
   ): Promise<{ success: boolean; error?: string }> => {
     setAuthState((prev) => ({ ...prev, isLoading: true }));
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await ApiService.login(email, password);
 
-    const userRecord = MOCK_USERS[email];
+      const user = {
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        role: response.user.role,
+        position: response.user.position,
+        isAdmin: response.user.isAdmin,
+      };
 
-    if (!userRecord || userRecord.password !== password) {
+      localStorage.setItem("cds_token", response.token);
+      localStorage.setItem("cds_user", JSON.stringify(user));
+
+      setAuthState({
+        user,
+        isLoading: false,
+        isAuthenticated: true,
+      });
+
+      return { success: true };
+    } catch (error: any) {
       setAuthState((prev) => ({ ...prev, isLoading: false }));
-      return { success: false, error: "Invalid email or password" };
+      return {
+        success: false,
+        error: error.message || "Login failed. Please check your credentials.",
+      };
     }
-
-    const { user } = userRecord;
-    localStorage.setItem("cds_user", JSON.stringify(user));
-
-    setAuthState({
-      user,
-      isLoading: false,
-      isAuthenticated: true,
-    });
-
-    return { success: true };
   };
 
   const logout = () => {
+    localStorage.removeItem("cds_token");
     localStorage.removeItem("cds_user");
     setAuthState({
       user: null,
