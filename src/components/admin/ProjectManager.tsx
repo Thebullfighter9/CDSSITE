@@ -179,11 +179,13 @@ export function ProjectManager() {
       if (isDev) {
         // Handle development mode operations locally
         if (editingProject) {
-          setProjects(prev => prev.map(p =>
-            p.id === editingProject.id
-              ? { ...p, ...formData, updatedAt: new Date().toISOString() }
-              : p
-          ));
+          setProjects((prev) =>
+            prev.map((p) =>
+              p.id === editingProject.id
+                ? { ...p, ...formData, updatedAt: new Date().toISOString() }
+                : p,
+            ),
+          );
           toast({
             title: "Success",
             description: "Project updated successfully",
@@ -196,7 +198,7 @@ export function ProjectManager() {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };
-          setProjects(prev => [...prev, newProject]);
+          setProjects((prev) => [...prev, newProject]);
           toast({
             title: "Success",
             description: "Project created successfully",
@@ -217,13 +219,14 @@ export function ProjectManager() {
           await ApiService.createProject({
             ...formData,
             createdBy: user.email,
-        });
-        toast({
-          title: "Success",
-          description: "Project created successfully",
-        });
+          });
+          toast({
+            title: "Success",
+            description: "Project created successfully",
+          });
+        }
+        await loadProjects();
       }
-      await loadProjects();
       handleCloseForm();
     } catch (error) {
       toast({
