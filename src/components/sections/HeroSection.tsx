@@ -8,7 +8,19 @@ export function HeroSection() {
   const [stats, setStats] = useState<SiteStats | null>(null);
 
   useEffect(() => {
-    ApiService.getStats().then(setStats);
+    ApiService.getStats()
+      .then(setStats)
+      .catch(() => {
+        // Use fallback stats if API fails
+        setStats({
+          gamesDeveloped: "3",
+          teamMembers: "12",
+          yearsExperience: "2",
+          hoursThisWeek: "40",
+          tasksCompleted: "15",
+          teamRating: "4.8",
+        });
+      });
   }, []);
 
   return (
@@ -128,7 +140,10 @@ export function HeroSection() {
             {[
               { label: "Games Developed", value: stats?.gamesDeveloped || "-" },
               { label: "Team Members", value: stats?.teamMembers || "-" },
-              { label: "Years Experience", value: stats?.yearsExperience || "-" },
+              {
+                label: "Years Experience",
+                value: stats?.yearsExperience || "-",
+              },
             ].map((stat, index) => (
               <div key={stat.label} className="text-center">
                 <motion.div
