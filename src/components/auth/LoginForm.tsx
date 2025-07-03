@@ -32,10 +32,8 @@ export function LoginForm() {
     const result = await login(email, password);
     if (result.success) {
       setSuccess(true);
-      // Navigate to dashboard after successful login
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 500);
+      // The auth state will change automatically, which will trigger a redirect
+      // via the ProtectedRoute or EmployeePortal component
     } else {
       setError(result.error || "Login failed");
     }

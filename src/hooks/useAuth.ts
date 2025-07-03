@@ -37,34 +37,43 @@ export function useAuth() {
           isAuthenticated: true,
         });
 
-        // Verify token is still valid by fetching current user
-        ApiService.getCurrentUser()
-          .then((currentUser) => {
-            const updatedUser = {
-              id: currentUser.id,
-              email: currentUser.email,
-              name: currentUser.name,
-              role: currentUser.role,
-              position: currentUser.position,
-              isAdmin: currentUser.isAdmin,
-            };
-            localStorage.setItem("cds_user", JSON.stringify(updatedUser));
-            setAuthState({
-              user: updatedUser,
-              isLoading: false,
-              isAuthenticated: true,
-            });
-          })
-          .catch(() => {
-            // Token invalid, clear auth
-            localStorage.removeItem("cds_token");
-            localStorage.removeItem("cds_user");
-            setAuthState({
-              user: null,
-              isLoading: false,
-              isAuthenticated: false,
-            });
+        // Skip API verification for development tokens
+        if (token === "dev-token") {
+          setAuthState({
+            user,
+            isLoading: false,
+            isAuthenticated: true,
           });
+        } else {
+          // Verify token is still valid by fetching current user
+          ApiService.getCurrentUser()
+            .then((currentUser) => {
+              const updatedUser = {
+                id: currentUser.id,
+                email: currentUser.email,
+                name: currentUser.name,
+                role: currentUser.role,
+                position: currentUser.position,
+                isAdmin: currentUser.isAdmin,
+              };
+              localStorage.setItem("cds_user", JSON.stringify(updatedUser));
+              setAuthState({
+                user: updatedUser,
+                isLoading: false,
+                isAuthenticated: true,
+              });
+            })
+            .catch(() => {
+              // Token invalid, clear auth
+              localStorage.removeItem("cds_token");
+              localStorage.removeItem("cds_user");
+              setAuthState({
+                user: null,
+                isLoading: false,
+                isAuthenticated: false,
+              });
+            });
+        }
       } catch {
         localStorage.removeItem("cds_token");
         localStorage.removeItem("cds_user");
