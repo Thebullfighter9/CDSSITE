@@ -1,6 +1,18 @@
 import ApiService from "@/services/api";
 
 export async function initializeCEOAccount(): Promise<boolean> {
+  // Only try to initialize if we're in a production-like environment
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
+    console.log("🔧 Development mode detected - skipping automatic CEO setup");
+    console.log(
+      "💡 You can login with CEO credentials: AlexDowling@circuitdreamsstudios.com / Hz3492k5$!",
+    );
+    return false;
+  }
+
   try {
     // Try to setup CEO account (will fail if already exists)
     await ApiService.setupCEO();
@@ -16,27 +28,17 @@ export async function initializeCEOAccount(): Promise<boolean> {
       return true;
     }
 
-    // Check if it's a network/API error
-    if (
-      error.message.includes("fetch") ||
-      error.message.includes("Failed to fetch")
-    ) {
-      console.warn(
-        "⚠️ Backend API not available - running in development mode",
-      );
-      console.log(
-        "📝 You can manually create the CEO account later via the API",
-      );
-      return false;
-    }
-
-    console.error("❌ Failed to create CEO account:", error.message);
-    console.log("💡 This may be normal if running without a backend server");
+    console.warn("⚠️ Could not initialize CEO account:", error.message);
+    console.log(
+      "💡 You can login with: AlexDowling@circuitdreamsstudios.com / Hz3492k5$!",
+    );
     return false;
   }
 }
 
-// Auto-run CEO setup when module is imported, but don't block the app
-initializeCEOAccount().catch(() => {
-  // Silently fail - app should still work in development mode
-});
+// Try to initialize but don't block the app if it fails
+setTimeout(() => {
+  initializeCEOAccount().catch(() => {
+    // Silently fail - app should still work in development mode
+  });
+}, 1000); // Delay to avoid blocking initial render
