@@ -257,13 +257,25 @@ export function ProjectManager() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.deleteProject(id);
-      await loadProjects();
-      toast({
-        title: "Success",
-        description: "Project deleted successfully",
-      });
+      if (isDev) {
+        // Handle development mode deletion locally
+        setProjects((prev) => prev.filter((p) => p.id !== id));
+        toast({
+          title: "Success",
+          description: "Project deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteProject(id);
+        await loadProjects();
+        toast({
+          title: "Success",
+          description: "Project deleted successfully",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
