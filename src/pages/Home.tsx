@@ -58,6 +58,50 @@ export default function Home() {
           description: "Our flagship cyberpunk adventure game",
           status: "In Development",
           tags: ["Cyberpunk", "Adventure", "Story-driven"],
+          releaseDate: "2024-Q3",
+          imageUrl: "",
+          features: [
+            "Open World",
+            "Character Customization",
+            "Multiple Endings",
+          ],
+          teamMembers: ["Alex Dowling", "Maya Rodriguez", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+        {
+          id: "2",
+          title: "Neon City VR",
+          category: "VR Experience",
+          description: "Immersive virtual reality city exploration",
+          status: "Concept",
+          tags: ["VR", "Exploration", "City"],
+          releaseDate: "2024-Q4",
+          imageUrl: "",
+          features: ["VR Compatible", "Procedural Generation", "Multiplayer"],
+          teamMembers: ["Alex Dowling", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+      ]);
+      return;
+    }
+
+    // API calls for production mode
+    ApiService.getProjects()
+      .then(setProjects)
+      .catch(() => {
+        // Use fallback projects if API fails
+        setProjects([
+          {
+            id: "1",
+            title: "Circuit Dreams Alpha",
+            category: "Game Development",
+            description: "Our flagship cyberpunk adventure game",
+            status: "In Development",
+            tags: ["Cyberpunk", "Adventure", "Story-driven"],
             releaseDate: "2024-Q3",
             imageUrl: "",
             features: [
@@ -66,21 +110,6 @@ export default function Home() {
               "Multiple Endings",
             ],
             teamMembers: ["Alex Dowling", "Maya Rodriguez", "Jordan Kim"],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: "Alex Dowling",
-          },
-          {
-            id: "2",
-            title: "Neon City VR",
-            category: "VR Experience",
-            description: "Immersive virtual reality city exploration",
-            status: "Concept",
-            tags: ["VR", "Exploration", "City"],
-            releaseDate: "2024-Q4",
-            imageUrl: "",
-            features: ["VR Compatible", "Procedural Generation", "Multiplayer"],
-            teamMembers: ["Alex Dowling", "Jordan Kim"],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             createdBy: "Alex Dowling",
