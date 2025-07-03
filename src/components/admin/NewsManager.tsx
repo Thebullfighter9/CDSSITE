@@ -230,7 +230,7 @@ export function NewsManager() {
     try {
       if (isDev) {
         // Handle development mode deletion locally
-        setNews(prev => prev.filter(n => n.id !== id));
+        setNews((prev) => prev.filter((n) => n.id !== id));
         toast({
           title: "Success",
           description: "News article deleted successfully",
@@ -244,12 +244,6 @@ export function NewsManager() {
           description: "News article deleted successfully",
         });
       }
-    } catch (error) {
-      await loadNews();
-      toast({
-        title: "Success",
-        description: "News article deleted successfully",
-      });
     } catch (error) {
       toast({
         title: "Error",
