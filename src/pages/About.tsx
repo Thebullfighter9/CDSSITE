@@ -228,7 +228,9 @@ export default function About() {
           </motion.div>
 
           {team.length === 0 ? (
-            <p className="text-foreground/70 text-center">No Team Members Yet</p>
+            <p className="text-foreground/70 text-center">
+              No Team Members Yet
+            </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {team.map((member, index) => {
@@ -241,115 +243,48 @@ export default function About() {
                     transition={{ duration: 0.8, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                  <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 group">
-                    <CardContent className="p-6 text-center">
-                      <div className="relative mb-6">
-                        <div
-                          className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-${member.color} to-neon-blue p-1`}
-                      >
-                        <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-                          <Icon className={`h-10 w-10 text-${member.color}`} />
+                    <Card className="h-full bg-card/30 glass border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300 group">
+                      <CardContent className="p-6 text-center">
+                        <div className="relative mb-6">
+                          <div
+                            className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-${member.color} to-neon-blue p-1`}
+                          >
+                            <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                              <Icon
+                                className={`h-10 w-10 text-${member.color}`}
+                              />
+                            </div>
+                          </div>
+                          <div
+                            className={`absolute inset-0 bg-${member.color}/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                          />
                         </div>
-                      </div>
-                      <div
-                        className={`absolute inset-0 bg-${member.color}/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                      />
-                    </div>
 
-                    <h3 className="text-xl font-bold text-foreground mb-2">
-                      {member.name}
-                    </h3>
-                    <p className={`text-${member.color} font-medium mb-4`}>
-                      {member.role}
-                    </p>
+                        <h3 className="text-xl font-bold text-foreground mb-2">
+                          {member.name}
+                        </h3>
+                        <p className={`text-${member.color} font-medium mb-4`}>
+                          {member.role}
+                        </p>
 
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {member.specialties.map((specialty) => (
-                        <Badge
-                          key={specialty}
-                          variant="outline"
-                          className={`text-xs border-${member.color}/30 text-${member.color}/80`}
-                        >
-                          {specialty}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {member.specialties.map((specialty) => (
+                            <Badge
+                              key={specialty}
+                              variant="outline"
+                              className={`text-xs border-${member.color}/30 text-${member.color}/80`}
+                            >
+                              {specialty}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Timeline Section */}
-      <section className="py-24 bg-gradient-to-b from-background to-circuit-darker">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-4">
-              Our Journey
-            </h2>
-            <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
-              From humble beginnings to industry recognition, here's how our
-              story has unfolded.
-            </p>
-          </motion.div>
-
-          <div className="max-w-4xl mx-auto">
-            {milestones.map((milestone, index) => (
-              <motion.div
-                key={milestone.year}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="flex items-center mb-12 last:mb-0"
-              >
-                <div className="flex-1 text-right pr-8">
-                  {index % 2 === 0 && (
-                    <div>
-                      <h3 className="text-xl font-bold text-neon-cyan mb-2">
-                        {milestone.event}
-                      </h3>
-                      <p className="text-foreground/70">
-                        {milestone.description}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-neon-cyan via-neon-blue to-neon-purple rounded-full flex items-center justify-center font-bold text-black">
-                    {milestone.year}
-                  </div>
-                  {index < milestones.length - 1 && (
-                    <div className="absolute top-16 left-1/2 transform -translate-x-1/2 w-0.5 h-16 bg-gradient-to-b from-neon-cyan to-neon-blue" />
-                  )}
-                </div>
-
-                <div className="flex-1 text-left pl-8">
-                  {index % 2 === 1 && (
-                    <div>
-                      <h3 className="text-xl font-bold text-neon-cyan mb-2">
-                        {milestone.event}
-                      </h3>
-                      <p className="text-foreground/70">
-                        {milestone.description}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
     </Layout>
