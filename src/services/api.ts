@@ -74,7 +74,19 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
       window.location.href = "/employee-portal";
       throw new Error("Authentication required");
     }
-    throw new Error(res.statusText);
+
+    // Try to get error message from response
+    let errorMessage = res.statusText;
+    try {
+      const errorData = await res.json();
+      if (errorData.error) {
+        errorMessage = errorData.error;
+      }
+    } catch {
+      // If can't parse JSON, use status text
+    }
+
+    throw new Error(errorMessage);
   }
   return res.json() as Promise<T>;
 }
