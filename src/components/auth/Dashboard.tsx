@@ -120,8 +120,117 @@ export function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   useEffect(() => {
-    ApiService.getStats().then(setStats);
-    ApiService.getProjects().then(setProjects);
+    // Check if we're in development mode
+    const isDev =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use fallback data for development
+      setStats({
+        gamesDeveloped: "3",
+        teamMembers: "12",
+        yearsExperience: "2",
+        hoursThisWeek: "40",
+        tasksCompleted: "15",
+        teamRating: "4.8",
+      });
+
+      setProjects([
+        {
+          id: "1",
+          title: "Circuit Dreams Alpha",
+          category: "Game Development",
+          description: "Our flagship cyberpunk adventure game",
+          status: "In Development",
+          tags: ["Cyberpunk", "Adventure", "Story-driven"],
+          releaseDate: "2024-Q3",
+          features: [
+            "Open World",
+            "Character Customization",
+            "Multiple Endings",
+          ],
+          teamMembers: ["Alex Dowling", "Maya Rodriguez", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+        {
+          id: "2",
+          title: "Neon City VR",
+          category: "VR Experience",
+          description: "Immersive virtual reality city exploration",
+          status: "Concept",
+          tags: ["VR", "Exploration", "City"],
+          releaseDate: "2024-Q4",
+          features: ["VR Compatible", "Procedural Generation", "Multiplayer"],
+          teamMembers: ["Alex Dowling", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+        {
+          id: "3",
+          title: "Circuit Toolkit",
+          category: "Development Tools",
+          description: "Game development utilities and tools",
+          status: "Released",
+          tags: ["Tools", "Utility", "Developer"],
+          releaseDate: "2024-Q1",
+          features: ["Asset Pipeline", "Code Generation", "Testing Framework"],
+          teamMembers: ["Maya Rodriguez", "Alex Dowling"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Maya Rodriguez",
+        },
+      ]);
+
+      setRecentActivity([
+        {
+          action: "Completed task",
+          target: "Character animation system",
+          time: "2 hours ago",
+        },
+        {
+          action: "Updated project",
+          target: "Circuit Dreams Alpha",
+          time: "4 hours ago",
+        },
+        {
+          action: "Created milestone",
+          target: "VR prototype demo",
+          time: "Yesterday",
+        },
+        {
+          action: "Reviewed code",
+          target: "Inventory system",
+          time: "2 days ago",
+        },
+      ]);
+    } else {
+      // Try to fetch real data in production
+      ApiService.getStats()
+        .then(setStats)
+        .catch(() => {
+          console.warn("Failed to load stats, using fallback");
+          setStats({
+            gamesDeveloped: "0",
+            teamMembers: "0",
+            yearsExperience: "0",
+            hoursThisWeek: "0",
+            tasksCompleted: "0",
+            teamRating: "0",
+          });
+        });
+
+      ApiService.getProjects()
+        .then(setProjects)
+        .catch(() => {
+          console.warn("Failed to load projects, using fallback");
+          setProjects([]);
+        });
+    }
   }, []);
 
   const getProgress = (status: Project["status"]): number => {
