@@ -45,18 +45,19 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    ApiService.getProjects()
-      .then(setProjects)
-      .catch(() => {
-        // Use fallback projects if API fails
-        setProjects([
-          {
-            id: "1",
-            title: "Circuit Dreams Alpha",
-            category: "Game Development",
-            description: "Our flagship cyberpunk adventure game",
-            status: "In Development",
-            tags: ["Cyberpunk", "Adventure", "Story-driven"],
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately
+      setProjects([
+        {
+          id: "1",
+          title: "Circuit Dreams Alpha",
+          category: "Game Development",
+          description: "Our flagship cyberpunk adventure game",
+          status: "In Development",
+          tags: ["Cyberpunk", "Adventure", "Story-driven"],
             releaseDate: "2024-Q3",
             imageUrl: "",
             features: [

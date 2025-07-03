@@ -8,6 +8,23 @@ export function HeroSection() {
   const [stats, setStats] = useState<SiteStats | null>(null);
 
   useEffect(() => {
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately
+      setStats({
+        gamesDeveloped: "3",
+        teamMembers: "12",
+        yearsExperience: "2",
+        hoursThisWeek: "40",
+        tasksCompleted: "15",
+        teamRating: "4.8",
+      });
+      return;
+    }
+
+    // API calls for production mode
     ApiService.getStats()
       .then(setStats)
       .catch(() => {
