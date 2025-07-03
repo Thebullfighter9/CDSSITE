@@ -8,10 +8,6 @@ export async function initializeCEOAccount(): Promise<boolean> {
     window.location.hostname === "127.0.0.1";
 
   if (isDev) {
-    console.log("🔧 Development mode detected - skipping automatic CEO setup");
-    console.log(
-      "💡 You can login with CEO credentials: AlexDowling@circuitdreamsstudios.com / Hz3492k5$!",
-    );
     return false;
   }
 
@@ -30,10 +26,7 @@ export async function initializeCEOAccount(): Promise<boolean> {
       return true;
     }
 
-    console.warn("⚠️ Could not initialize CEO account:", error.message);
-    console.log(
-      "💡 You can login with: AlexDowling@circuitdreamsstudios.com / Hz3492k5$!",
-    );
+    // Silently fail in development mode
     return false;
   }
 }
