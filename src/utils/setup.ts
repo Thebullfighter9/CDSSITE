@@ -1,11 +1,13 @@
 import ApiService from "@/services/api";
 
 export async function initializeCEOAccount(): Promise<boolean> {
-  // Only try to initialize if we're in a production-like environment
-  if (
+  // Skip API calls if in development mode or using dev token
+  const isDev =
+    localStorage.getItem("cds_token") === "dev-token" ||
     window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
+    window.location.hostname === "127.0.0.1";
+
+  if (isDev) {
     console.log("🔧 Development mode detected - skipping automatic CEO setup");
     console.log(
       "💡 You can login with CEO credentials: AlexDowling@circuitdreamsstudios.com / Hz3492k5$!",
