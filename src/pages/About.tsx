@@ -76,7 +76,19 @@ export default function About() {
   const [team, setTeam] = useState<any[]>([]);
 
   useEffect(() => {
-    ApiService.getEmployees().then(setTeam);
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately
+      setTeam([]);
+      return;
+    }
+
+    // API calls for production mode
+    ApiService.getEmployees()
+      .then(setTeam)
+      .catch(() => setTeam([]));
   }, []);
   return (
     <Layout>
