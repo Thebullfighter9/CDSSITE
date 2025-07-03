@@ -43,20 +43,18 @@ export function ContactManager() {
   }, []);
 
   const loadContacts = async () => {
-    try {
-      const data = await ApiService.getContacts();
-      setContacts(data);
-    } catch (error) {
-      // Use fallback data in development
-      console.warn("API failed, using fallback contact data");
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
       setContacts([
         {
           id: "1",
           name: "Sarah Johnson",
           email: "sarah@techcorp.com",
           subject: "Partnership Opportunity",
-          message:
-            "Hi, I'm interested in discussing a potential partnership for our upcoming game project. We think CircuitDreamsStudios would be a great fit.",
+          message: "Hi, I'm interested in discussing a potential partnership for our upcoming game project. We think CircuitDreamsStudios would be a great fit.",
           submittedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
           status: "New",
         },
@@ -65,8 +63,7 @@ export function ContactManager() {
           name: "Mike Chen",
           email: "mike.chen@gamestudio.io",
           subject: "Collaboration Request",
-          message:
-            "We're working on a cyberpunk-themed project and would love to collaborate on art assets. Your style perfectly matches our vision.",
+          message: "We're working on a cyberpunk-themed project and would love to collaborate on art assets. Your style perfectly matches our vision.",
           submittedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
           status: "Read",
         },
@@ -75,8 +72,7 @@ export function ContactManager() {
           name: "Emma Rodriguez",
           email: "emma@indiegamer.net",
           subject: "Interview Request",
-          message:
-            "I'm a journalist covering indie game development. Could I interview Alex Dowling about CircuitDreamsStudios' journey?",
+          message: "I'm a journalist covering indie game development. Could I interview Alex Dowling about CircuitDreamsStudios' journey?",
           submittedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
           status: "Responded",
         },

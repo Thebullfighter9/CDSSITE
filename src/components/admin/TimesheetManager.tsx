@@ -31,16 +31,11 @@ export function TimesheetManager() {
   }, []);
 
   const loadData = async () => {
-    try {
-      const [ts, emps] = await Promise.all([
-        ApiService.getTimesheets(),
-        ApiService.getEmployees(),
-      ]);
-      setTimesheets(ts);
-      setEmployees(emps);
-    } catch (error) {
-      // Use fallback data in development
-      console.warn("API failed, using fallback timesheet data");
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
       setTimesheets([
         {
           id: "1",

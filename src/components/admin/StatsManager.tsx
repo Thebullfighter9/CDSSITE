@@ -25,12 +25,11 @@ export function StatsManager() {
   }, []);
 
   const loadStats = async () => {
-    try {
-      const data = await ApiService.getStats();
-      setFormData(data);
-    } catch (error) {
-      // Use fallback data in development
-      console.warn("API failed, using fallback stats data");
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
       setFormData({
         gamesDeveloped: "3",
         teamMembers: "12",

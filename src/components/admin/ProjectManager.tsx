@@ -91,29 +91,22 @@ export function ProjectManager() {
   }, []);
 
   const loadProjects = async () => {
-    try {
-      const data = await ApiService.getProjects();
-      setProjects(data);
-    } catch (error) {
-      // Use fallback data in development
-      console.warn("API failed, using fallback project data");
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
       setProjects([
         {
           id: "1",
           title: "Circuit Dreams Alpha",
           category: "Game Development",
-          description:
-            "Our flagship cyberpunk adventure game featuring an immersive story-driven experience.",
+          description: "Our flagship cyberpunk adventure game featuring an immersive story-driven experience.",
           status: "In Development",
           tags: ["Cyberpunk", "Adventure", "Story-driven"],
           releaseDate: "2024-Q3",
           imageUrl: "",
-          features: [
-            "Open World",
-            "Character Customization",
-            "Multiple Endings",
-            "Voice Acting",
-          ],
+          features: ["Open World", "Character Customization", "Multiple Endings", "Voice Acting"],
           teamMembers: ["Alex Dowling", "Maya Rodriguez", "Jordan Kim"],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -123,18 +116,12 @@ export function ProjectManager() {
           id: "2",
           title: "Neon City VR",
           category: "VR Experience",
-          description:
-            "Immersive virtual reality city exploration with procedural generation.",
+          description: "Immersive virtual reality city exploration with procedural generation.",
           status: "Concept",
           tags: ["VR", "Exploration", "City", "Procedural"],
           releaseDate: "2024-Q4",
           imageUrl: "",
-          features: [
-            "VR Compatible",
-            "Procedural Generation",
-            "Multiplayer",
-            "Hand Tracking",
-          ],
+          features: ["VR Compatible", "Procedural Generation", "Multiplayer", "Hand Tracking"],
           teamMembers: ["Alex Dowling", "Jordan Kim"],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -144,18 +131,12 @@ export function ProjectManager() {
           id: "3",
           title: "Circuit Toolkit",
           category: "Development Tools",
-          description:
-            "Comprehensive game development utilities and pipeline tools.",
+          description: "Comprehensive game development utilities and pipeline tools.",
           status: "Released",
           tags: ["Tools", "Utility", "Developer", "Pipeline"],
           releaseDate: "2024-Q1",
           imageUrl: "",
-          features: [
-            "Asset Pipeline",
-            "Code Generation",
-            "Testing Framework",
-            "Performance Profiler",
-          ],
+          features: ["Asset Pipeline", "Code Generation", "Testing Framework", "Performance Profiler"],
           teamMembers: ["Maya Rodriguez", "Alex Dowling"],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
