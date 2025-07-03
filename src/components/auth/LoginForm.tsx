@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
+import { DevModeNotice } from "./DevModeNotice";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -86,6 +87,7 @@ export function LoginForm() {
           </CardHeader>
 
           <CardContent>
+            <DevModeNotice />
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <motion.div
