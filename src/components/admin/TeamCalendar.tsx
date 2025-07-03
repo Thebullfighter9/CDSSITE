@@ -90,17 +90,42 @@ export function TeamCalendar() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editing) {
-        await ApiService.updateEvent(editing.id, form);
-        toast({ title: "Success", description: "Event updated" });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editing) {
+          setEvents((prev) =>
+            prev.map((event) =>
+              event.id === editing.id ? { ...event, ...form } : event,
+            ),
+          );
+          toast({ title: "Success", description: "Event updated" });
+        } else {
+          const newEvent = {
+            ...form,
+            id: Date.now().toString(),
+          };
+          setEvents((prev) => [...prev, newEvent]);
+          toast({ title: "Success", description: "Event added" });
+        }
+        setForm({ title: "", date: "", description: "" });
+        setEditing(null);
       } else {
-        await ApiService.addEvent(form);
-        toast({ title: "Success", description: "Event added" });
+        // Production API calls
+        if (editing) {
+          await ApiService.updateEvent(editing.id, form);
+          toast({ title: "Success", description: "Event updated" });
+        } else {
+          await ApiService.addEvent(form);
+          toast({ title: "Success", description: "Event added" });
+        }
+        setForm({ title: "", date: "", description: "" });
+        setEditing(null);
+        await loadEvents();
       }
-      setForm({ title: "", date: "", description: "" });
-      setEditing(null);
-      await loadEvents();
     } catch {
       toast({
         title: "Error",
@@ -117,8 +142,33 @@ export function TeamCalendar() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this event?")) return;
-    await ApiService.deleteEvent(id);
-    await loadEvents();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    try {
+      if (isDev) {
+        // Handle development mode deletion locally
+        setEvents((prev) => prev.filter((event) => event.id !== id));
+        toast({
+          title: "Success",
+          description: "Event deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteEvent(id);
+        await loadEvents();
+        toast({
+          title: "Success",
+          description: "Event deleted successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete event",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) return <div className="p-8 text-neon-cyan">Loading...</div>;
