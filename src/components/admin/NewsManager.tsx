@@ -135,27 +135,67 @@ export function NewsManager() {
     e.preventDefault();
     if (!user) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editingNews) {
-        await ApiService.updateNews(editingNews.id, {
-          ...formData,
-          date: new Date().toISOString().split("T")[0],
-          updatedAt: new Date().toISOString(),
-        });
-        toast({
-          title: "Success",
-          description: "News article updated successfully",
-        });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editingNews) {
+          setNews((prev) =>
+            prev.map((n) =>
+              n.id === editingNews.id
+                ? {
+                    ...n,
+                    ...formData,
+                    date: new Date().toISOString().split("T")[0],
+                    updatedAt: new Date().toISOString(),
+                  }
+                : n,
+            ),
+          );
+          toast({
+            title: "Success",
+            description: "News article updated successfully",
+          });
+        } else {
+          const newNews = {
+            ...formData,
+            id: Date.now().toString(),
+            date: new Date().toISOString().split("T")[0],
+            author: formData.author || user.name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          setNews((prev) => [...prev, newNews]);
+          toast({
+            title: "Success",
+            description: "News article created successfully",
+          });
+        }
       } else {
-        await ApiService.createNews({
-          ...formData,
-          date: new Date().toISOString().split("T")[0],
-          author: formData.author || user.name,
-        });
-        toast({
-          title: "Success",
-          description: "News article created successfully",
-        });
+        // Production API calls
+        if (editingNews) {
+          await ApiService.updateNews(editingNews.id, {
+            ...formData,
+            date: new Date().toISOString().split("T")[0],
+            updatedAt: new Date().toISOString(),
+          });
+          toast({
+            title: "Success",
+            description: "News article updated successfully",
+          });
+        } else {
+          await ApiService.createNews({
+            ...formData,
+            date: new Date().toISOString().split("T")[0],
+            author: formData.author || user.name,
+          });
+          toast({
+            title: "Success",
+            description: "News article created successfully",
+          });
+        }
+        await loadNews();
       }
       await loadNews();
       handleCloseForm();
