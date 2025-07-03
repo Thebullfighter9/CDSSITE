@@ -225,8 +225,26 @@ export function NewsManager() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this news article?")) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.deleteNews(id);
+      if (isDev) {
+        // Handle development mode deletion locally
+        setNews(prev => prev.filter(n => n.id !== id));
+        toast({
+          title: "Success",
+          description: "News article deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteNews(id);
+        await loadNews();
+        toast({
+          title: "Success",
+          description: "News article deleted successfully",
+        });
+      }
+    } catch (error) {
       await loadNews();
       toast({
         title: "Success",
