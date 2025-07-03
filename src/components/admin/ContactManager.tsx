@@ -92,13 +92,27 @@ export function ContactManager() {
     id: string,
     status: ContactSubmission["status"],
   ) => {
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.updateContactStatus(id, status);
-      await loadContacts();
-      toast({
-        title: "Success",
-        description: "Contact status updated successfully",
-      });
+      if (isDev) {
+        // Handle development mode locally
+        setContacts((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, status } : c)),
+        );
+        toast({
+          title: "Success",
+          description: "Contact status updated successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.updateContactStatus(id, status);
+        await loadContacts();
+        toast({
+          title: "Success",
+          description: "Contact status updated successfully",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
