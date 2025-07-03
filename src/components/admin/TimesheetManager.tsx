@@ -103,17 +103,40 @@ export function TimesheetManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editing) {
-        await ApiService.updateTimesheet(editing.id, form);
-        toast({ title: "Success", description: "Timesheet updated" });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editing) {
+          setTimesheets((prev) =>
+            prev.map((t) => (t.id === editing.id ? { ...t, ...form } : t)),
+          );
+          toast({ title: "Success", description: "Timesheet updated" });
+        } else {
+          const newTimesheet = {
+            ...form,
+            id: Date.now().toString(),
+          };
+          setTimesheets((prev) => [...prev, newTimesheet]);
+          toast({ title: "Success", description: "Timesheet added" });
+        }
+        setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
+        setEditing(null);
       } else {
-        await ApiService.addTimesheet(form);
-        toast({ title: "Success", description: "Timesheet added" });
+        // Production API calls
+        if (editing) {
+          await ApiService.updateTimesheet(editing.id, form);
+          toast({ title: "Success", description: "Timesheet updated" });
+        } else {
+          await ApiService.addTimesheet(form);
+          toast({ title: "Success", description: "Timesheet added" });
+        }
+        setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
+        setEditing(null);
+        await loadData();
       }
-      setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
-      setEditing(null);
-      await loadData();
     } catch {
       toast({
         title: "Error",
