@@ -28,6 +28,7 @@ import { ContactManager } from "@/components/admin/ContactManager";
 import { StatsManager } from "@/components/admin/StatsManager";
 import { TimesheetManager } from "@/components/admin/TimesheetManager";
 import { TeamCalendar } from "@/components/admin/TeamCalendar";
+import { StaffManager } from "@/components/admin/StaffManager";
 import ApiService, { SiteStats, Project } from "@/services/api";
 
 const dashboardCards = [
@@ -62,6 +63,14 @@ const dashboardCards = [
 ];
 
 const adminCards = [
+  {
+    title: "Staff Management",
+    icon: Users,
+    description: "Manage team members and their roles",
+    color: "neon-purple",
+    action: "Manage Staff",
+    tab: "staff",
+  },
   {
     title: "Project Management",
     icon: Gamepad2,
@@ -296,10 +305,11 @@ export function Dashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 mb-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-8 mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             {isAdmin && (
               <>
+                <TabsTrigger value="staff">Staff</TabsTrigger>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
                 <TabsTrigger value="news">News</TabsTrigger>
                 <TabsTrigger value="contacts">Contacts</TabsTrigger>
@@ -585,6 +595,10 @@ export function Dashboard() {
           {/* Admin Tabs */}
           {isAdmin && (
             <>
+              <TabsContent value="staff">
+                <StaffManager />
+              </TabsContent>
+
               <TabsContent value="projects">
                 <ProjectManager />
               </TabsContent>
