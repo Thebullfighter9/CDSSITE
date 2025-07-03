@@ -32,11 +32,10 @@ export function LoginForm() {
     const result = await login(email, password);
     if (result.success) {
       setSuccess(true);
-      // Small delay to show success message, then the auth state will update
+      // Navigate to dashboard after successful login
       setTimeout(() => {
-        // Force a refresh of the page if the auth state doesn't update
-        window.location.reload();
-      }, 1000);
+        navigate("/dashboard");
+      }, 500);
     } else {
       setError(result.error || "Login failed");
     }
