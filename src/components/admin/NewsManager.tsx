@@ -260,13 +260,29 @@ export function NewsManager() {
   };
 
   const togglePublished = async (id: string, currentStatus: boolean) => {
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.updateNews(id, { published: !currentStatus });
-      await loadNews();
-      toast({
-        title: "Success",
-        description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
-      });
+      if (isDev) {
+        // Handle development mode locally
+        setNews((prev) =>
+          prev.map((n) =>
+            n.id === id ? { ...n, published: !currentStatus } : n,
+          ),
+        );
+        toast({
+          title: "Success",
+          description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
+        });
+      } else {
+        // Production API call
+        await ApiService.updateNews(id, { published: !currentStatus });
+        await loadNews();
+        toast({
+          title: "Success",
+          description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
