@@ -80,8 +80,10 @@ export function NewsManager() {
         {
           id: "1",
           title: "Circuit Dreams Alpha Reaches Major Milestone",
-          excerpt: "Our flagship game has completed its core mechanics and is moving into the polishing phase.",
-          content: "We're excited to announce that Circuit Dreams Alpha has reached a major development milestone. The core gameplay mechanics, character progression system, and main story arc are now complete. Our team is moving into the polishing phase, focusing on performance optimization, bug fixes, and visual enhancements. We expect to enter beta testing within the next two months.",
+          excerpt:
+            "Our flagship game has completed its core mechanics and is moving into the polishing phase.",
+          content:
+            "We're excited to announce that Circuit Dreams Alpha has reached a major development milestone. The core gameplay mechanics, character progression system, and main story arc are now complete. Our team is moving into the polishing phase, focusing on performance optimization, bug fixes, and visual enhancements. We expect to enter beta testing within the next two months.",
           date: new Date().toISOString(),
           category: "Development",
           author: "Alex Dowling",
@@ -93,8 +95,10 @@ export function NewsManager() {
         {
           id: "2",
           title: "CircuitDreamsStudios Wins Indie Game Excellence Award",
-          excerpt: "We're honored to receive recognition for our innovative approach to cyberpunk storytelling.",
-          content: "CircuitDreamsStudios has been awarded the Indie Game Excellence Award for Innovation in Storytelling at the Independent Game Developers Conference. This recognition highlights our team's dedication to creating immersive, narrative-driven experiences that push the boundaries of interactive entertainment.",
+          excerpt:
+            "We're honored to receive recognition for our innovative approach to cyberpunk storytelling.",
+          content:
+            "CircuitDreamsStudios has been awarded the Indie Game Excellence Award for Innovation in Storytelling at the Independent Game Developers Conference. This recognition highlights our team's dedication to creating immersive, narrative-driven experiences that push the boundaries of interactive entertainment.",
           date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
           category: "Awards",
           author: "Maya Rodriguez",
@@ -106,8 +110,10 @@ export function NewsManager() {
         {
           id: "3",
           title: "New Team Member: Jordan Kim Joins as Lead Designer",
-          excerpt: "We're thrilled to welcome Jordan Kim to our growing team of creative professionals.",
-          content: "CircuitDreamsStudios is excited to announce the addition of Jordan Kim as our new Lead Designer. Jordan brings over 8 years of experience in game design and has worked on several acclaimed indie titles. With Jordan's expertise, we're confident in our ability to deliver even more compelling and polished gaming experiences.",
+          excerpt:
+            "We're thrilled to welcome Jordan Kim to our growing team of creative professionals.",
+          content:
+            "CircuitDreamsStudios is excited to announce the addition of Jordan Kim as our new Lead Designer. Jordan brings over 8 years of experience in game design and has worked on several acclaimed indie titles. With Jordan's expertise, we're confident in our ability to deliver even more compelling and polished gaming experiences.",
           date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 2 weeks ago
           category: "Company",
           author: "Alex Dowling",
@@ -117,9 +123,12 @@ export function NewsManager() {
           updatedAt: new Date().toISOString(),
         },
       ]);
-    } finally {
       setIsLoading(false);
+      return;
     }
+
+    // API calls for production mode would go here
+    setIsLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
