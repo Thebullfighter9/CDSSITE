@@ -135,8 +135,33 @@ export function TimesheetManager() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this entry?")) return;
-    await ApiService.deleteTimesheet(id);
-    await loadData();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    try {
+      if (isDev) {
+        // Handle development mode deletion locally
+        setTimesheets((prev) => prev.filter((t) => t.id !== id));
+        toast({
+          title: "Success",
+          description: "Timesheet entry deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteTimesheet(id);
+        await loadData();
+        toast({
+          title: "Success",
+          description: "Timesheet entry deleted successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete timesheet entry",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) return <div className="p-8 text-neon-cyan">Loading...</div>;
