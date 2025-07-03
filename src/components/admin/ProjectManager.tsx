@@ -173,20 +173,50 @@ export function ProjectManager() {
     e.preventDefault();
     if (!user) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editingProject) {
-        await ApiService.updateProject(editingProject.id, {
-          ...formData,
-          updatedAt: new Date().toISOString(),
-        });
-        toast({
-          title: "Success",
-          description: "Project updated successfully",
-        });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editingProject) {
+          setProjects(prev => prev.map(p =>
+            p.id === editingProject.id
+              ? { ...p, ...formData, updatedAt: new Date().toISOString() }
+              : p
+          ));
+          toast({
+            title: "Success",
+            description: "Project updated successfully",
+          });
+        } else {
+          const newProject = {
+            ...formData,
+            id: Date.now().toString(),
+            createdBy: user.email,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          setProjects(prev => [...prev, newProject]);
+          toast({
+            title: "Success",
+            description: "Project created successfully",
+          });
+        }
       } else {
-        await ApiService.createProject({
-          ...formData,
-          createdBy: user.email,
+        // Production API calls
+        if (editingProject) {
+          await ApiService.updateProject(editingProject.id, {
+            ...formData,
+            updatedAt: new Date().toISOString(),
+          });
+          toast({
+            title: "Success",
+            description: "Project updated successfully",
+          });
+        } else {
+          await ApiService.createProject({
+            ...formData,
+            createdBy: user.email,
         });
         toast({
           title: "Success",
