@@ -107,6 +107,12 @@ class ApiService {
     return request<any>(`${BASE}/api/auth?action=me`);
   }
 
+  static async logout() {
+    return request<{ message: string }>(`${BASE}/api/auth?action=logout`, {
+      method: "POST",
+    });
+  }
+
   static async setupCEO() {
     return request<{ message: string }>(`${BASE}/api/auth?action=setup-ceo`, {
       method: "POST",
