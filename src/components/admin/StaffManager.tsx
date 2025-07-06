@@ -216,9 +216,18 @@ export function StaffManager() {
           title: "Success",
           description: `Staff member ${editingStaff ? "updated" : "created"} successfully`,
         });
-      }
 
-      resetForm();
+        // Reset form and close dialog
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+          role: "Employee",
+          position: "",
+        });
+        setEditingStaff(null);
+        setIsDialogOpen(false);
+      }
     } catch (error) {
       toast({
         title: "Error",
