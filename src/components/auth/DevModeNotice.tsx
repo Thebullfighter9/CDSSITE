@@ -4,7 +4,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function DevModeNotice() {
   const isDev =
     window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "0.0.0.0";
 
   if (!isDev) return null;
 
@@ -33,6 +34,16 @@ export function DevModeNotice() {
             /{" "}
             <code className="text-xs bg-yellow-500/20 px-1 rounded">
               dev123
+            </code>
+          </div>
+          <div>
+            <strong>Team Lead:</strong>{" "}
+            <code className="text-xs bg-yellow-500/20 px-1 rounded">
+              teamlead@circuitdreamsstudios.com
+            </code>{" "}
+            /{" "}
+            <code className="text-xs bg-yellow-500/20 px-1 rounded">
+              lead123
             </code>
           </div>
           <div>
