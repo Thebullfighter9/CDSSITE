@@ -165,23 +165,23 @@ export function StaffManager() {
 
       if (isDev) {
         const newStaffMember: StaffMember = {
-          id: Date.now().toString(),
+          id: editingStaff ? editingStaff.id : Date.now().toString(),
           name: form.name,
           email: form.email,
           role: form.role as any,
           position: form.position,
           isAdmin: ["CEO", "Admin"].includes(form.role),
-          createdAt: new Date().toISOString(),
-          createdBy: user?.email || "unknown",
+          createdAt: editingStaff
+            ? editingStaff.createdAt
+            : new Date().toISOString(),
+          createdBy: editingStaff
+            ? editingStaff.createdBy
+            : user?.email || "unknown",
         };
 
         if (editingStaff) {
           setStaff((prev) =>
-            prev.map((s) =>
-              s.id === editingStaff.id
-                ? { ...newStaffMember, id: editingStaff.id }
-                : s,
-            ),
+            prev.map((s) => (s.id === editingStaff.id ? newStaffMember : s)),
           );
           toast({
             title: "Success",
@@ -194,6 +194,17 @@ export function StaffManager() {
             description: "Staff member created successfully",
           });
         }
+
+        // Reset form and close dialog
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+          role: "Employee",
+          position: "",
+        });
+        setEditingStaff(null);
+        setIsDialogOpen(false);
       } else {
         if (editingStaff) {
           await ApiService.updateUser(editingStaff.id, form);
