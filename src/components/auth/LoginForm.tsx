@@ -7,17 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
+import { DevModeNotice } from "./DevModeNotice";
+import { useNavigate } from "react-router-dom";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
 
     if (!email || !password) {
       setError("Please fill in all fields");
@@ -25,7 +30,13 @@ export function LoginForm() {
     }
 
     const result = await login(email, password);
-    if (!result.success) {
+    if (result.success) {
+      setSuccess(true);
+      // Navigate directly to dashboard after successful login
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 500);
+    } else {
       setError(result.error || "Login failed");
     }
   };
@@ -86,6 +97,7 @@ export function LoginForm() {
           </CardHeader>
 
           <CardContent>
+            <DevModeNotice />
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <motion.div
@@ -96,6 +108,20 @@ export function LoginForm() {
                     <AlertCircle className="h-4 w-4 text-red-500" />
                     <AlertDescription className="text-red-400">
                       {error}
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Alert className="border-green-500/50 bg-green-500/10">
+                    <AlertCircle className="h-4 w-4 text-green-500" />
+                    <AlertDescription className="text-green-400">
+                      Login successful! Redirecting to dashboard...
                     </AlertDescription>
                   </Alert>
                 </motion.div>
@@ -165,14 +191,13 @@ export function LoginForm() {
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-foreground/60">Demo credentials:</p>
-                <div className="mt-2 space-y-1 text-xs text-foreground/50">
-                  <div>Admin: admin@circuitdreamsstudios.com / admin123</div>
-                  <div>Dev: dev@circuitdreamsstudios.com / dev123</div>
-                  <div>
-                    Designer: designer@circuitdreamsstudios.com / design123
-                  </div>
-                </div>
+                <p className="text-xs text-foreground/40">
+                  Access restricted to authorized CircuitDreamsStudios personnel
+                  only.
+                </p>
+                <p className="text-xs text-foreground/30 mt-1">
+                  Contact your administrator for account access.
+                </p>
               </div>
             </form>
           </CardContent>

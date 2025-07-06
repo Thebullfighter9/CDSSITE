@@ -28,6 +28,7 @@ import { ContactManager } from "@/components/admin/ContactManager";
 import { StatsManager } from "@/components/admin/StatsManager";
 import { TimesheetManager } from "@/components/admin/TimesheetManager";
 import { TeamCalendar } from "@/components/admin/TeamCalendar";
+import { StaffManager } from "@/components/admin/StaffManager";
 import ApiService, { SiteStats, Project } from "@/services/api";
 
 const dashboardCards = [
@@ -62,6 +63,14 @@ const dashboardCards = [
 ];
 
 const adminCards = [
+  {
+    title: "Staff Management",
+    icon: Users,
+    description: "Manage team members and their roles",
+    color: "neon-purple",
+    action: "Manage Staff",
+    tab: "staff",
+  },
   {
     title: "Project Management",
     icon: Gamepad2,
@@ -120,8 +129,117 @@ export function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   useEffect(() => {
-    ApiService.getStats().then(setStats);
-    ApiService.getProjects().then(setProjects);
+    // Check if we're in development mode
+    const isDev =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use fallback data for development
+      setStats({
+        gamesDeveloped: "3",
+        teamMembers: "12",
+        yearsExperience: "2",
+        hoursThisWeek: "40",
+        tasksCompleted: "15",
+        teamRating: "4.8",
+      });
+
+      setProjects([
+        {
+          id: "1",
+          title: "Circuit Dreams Alpha",
+          category: "Game Development",
+          description: "Our flagship cyberpunk adventure game",
+          status: "In Development",
+          tags: ["Cyberpunk", "Adventure", "Story-driven"],
+          releaseDate: "2024-Q3",
+          features: [
+            "Open World",
+            "Character Customization",
+            "Multiple Endings",
+          ],
+          teamMembers: ["Alex Dowling", "Maya Rodriguez", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+        {
+          id: "2",
+          title: "Neon City VR",
+          category: "VR Experience",
+          description: "Immersive virtual reality city exploration",
+          status: "Concept",
+          tags: ["VR", "Exploration", "City"],
+          releaseDate: "2024-Q4",
+          features: ["VR Compatible", "Procedural Generation", "Multiplayer"],
+          teamMembers: ["Alex Dowling", "Jordan Kim"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Alex Dowling",
+        },
+        {
+          id: "3",
+          title: "Circuit Toolkit",
+          category: "Development Tools",
+          description: "Game development utilities and tools",
+          status: "Released",
+          tags: ["Tools", "Utility", "Developer"],
+          releaseDate: "2024-Q1",
+          features: ["Asset Pipeline", "Code Generation", "Testing Framework"],
+          teamMembers: ["Maya Rodriguez", "Alex Dowling"],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: "Maya Rodriguez",
+        },
+      ]);
+
+      setRecentActivity([
+        {
+          action: "Completed task",
+          target: "Character animation system",
+          time: "2 hours ago",
+        },
+        {
+          action: "Updated project",
+          target: "Circuit Dreams Alpha",
+          time: "4 hours ago",
+        },
+        {
+          action: "Created milestone",
+          target: "VR prototype demo",
+          time: "Yesterday",
+        },
+        {
+          action: "Reviewed code",
+          target: "Inventory system",
+          time: "2 days ago",
+        },
+      ]);
+    } else {
+      // Try to fetch real data in production
+      ApiService.getStats()
+        .then(setStats)
+        .catch(() => {
+          console.warn("Failed to load stats, using fallback");
+          setStats({
+            gamesDeveloped: "0",
+            teamMembers: "0",
+            yearsExperience: "0",
+            hoursThisWeek: "0",
+            tasksCompleted: "0",
+            teamRating: "0",
+          });
+        });
+
+      ApiService.getProjects()
+        .then(setProjects)
+        .catch(() => {
+          console.warn("Failed to load projects, using fallback");
+          setProjects([]);
+        });
+    }
   }, []);
 
   const getProgress = (status: Project["status"]): number => {
@@ -141,7 +259,7 @@ export function Dashboard() {
 
   if (!user) return null;
 
-  const isAdmin = user.role === "Admin";
+  const isAdmin = user.isAdmin || ["CEO", "Admin"].includes(user.role);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-circuit-darker">
@@ -162,7 +280,7 @@ export function Dashboard() {
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-foreground/60">
-                    {user.role} • {user.department}
+                    {user.role} • {user.position}
                   </p>
                   {isAdmin && (
                     <Badge className="text-xs bg-neon-purple/20 text-neon-purple border-neon-purple/30">
@@ -187,10 +305,11 @@ export function Dashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 mb-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-8 mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             {isAdmin && (
               <>
+                <TabsTrigger value="staff">Staff</TabsTrigger>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
                 <TabsTrigger value="news">News</TabsTrigger>
                 <TabsTrigger value="contacts">Contacts</TabsTrigger>
@@ -448,21 +567,21 @@ export function Dashboard() {
                               }}
                               className="flex items-start space-x-3 pb-3 border-b border-neon-cyan/10 last:border-b-0 last:pb-0"
                             >
-                            <div className="w-2 h-2 bg-neon-cyan rounded-full mt-2 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm">
-                                <span className="font-medium text-neon-cyan">
-                                  {activity.action}
-                                </span>{" "}
-                                <span className="text-foreground/80">
-                                  {activity.target}
-                                </span>
-                              </p>
-                              <p className="text-xs text-foreground/60 mt-1">
-                                {activity.time}
-                              </p>
-                            </div>
-                          </motion.div>
+                              <div className="w-2 h-2 bg-neon-cyan rounded-full mt-2 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm">
+                                  <span className="font-medium text-neon-cyan">
+                                    {activity.action}
+                                  </span>{" "}
+                                  <span className="text-foreground/80">
+                                    {activity.target}
+                                  </span>
+                                </p>
+                                <p className="text-xs text-foreground/60 mt-1">
+                                  {activity.time}
+                                </p>
+                              </div>
+                            </motion.div>
                           ))
                         )}
                       </div>
@@ -476,6 +595,10 @@ export function Dashboard() {
           {/* Admin Tabs */}
           {isAdmin && (
             <>
+              <TabsContent value="staff">
+                <StaffManager />
+              </TabsContent>
+
               <TabsContent value="projects">
                 <ProjectManager />
               </TabsContent>

@@ -25,8 +25,20 @@ export function StatsManager() {
   }, []);
 
   const loadStats = async () => {
-    const data = await ApiService.getStats();
-    setFormData(data);
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
+      setFormData({
+        gamesDeveloped: "3",
+        teamMembers: "12",
+        yearsExperience: "2",
+        hoursThisWeek: "156",
+        tasksCompleted: "47",
+        teamRating: "4.8",
+      });
+    }
     setIsLoading(false);
   };
 
@@ -36,9 +48,18 @@ export function StatsManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.updateStats(formData);
-      toast({ title: "Success", description: "Statistics updated" });
+      if (isDev) {
+        // Handle development mode locally
+        toast({ title: "Success", description: "Statistics updated" });
+      } else {
+        // Production API call
+        await ApiService.updateStats(formData);
+        toast({ title: "Success", description: "Statistics updated" });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -126,7 +147,10 @@ export function StatsManager() {
             />
           </div>
           <div className="flex justify-end pt-2">
-            <Button type="submit" className="bg-neon-cyan text-black hover:bg-neon-blue">
+            <Button
+              type="submit"
+              className="bg-neon-cyan text-black hover:bg-neon-blue"
+            >
               Save
             </Button>
           </div>

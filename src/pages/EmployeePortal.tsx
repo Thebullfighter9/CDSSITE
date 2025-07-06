@@ -3,9 +3,19 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { Dashboard } from "@/components/auth/Dashboard";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeePortal() {
   const { isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to dashboard when authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
     return (

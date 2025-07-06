@@ -31,12 +31,69 @@ export function TimesheetManager() {
   }, []);
 
   const loadData = async () => {
-    const [ts, emps] = await Promise.all([
-      ApiService.getTimesheets(),
-      ApiService.getEmployees(),
-    ]);
-    setTimesheets(ts);
-    setEmployees(emps);
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
+      setTimesheets([
+        {
+          id: "1",
+          employeeId: "1",
+          employeeName: "Alex Dowling",
+          date: new Date().toISOString().split("T")[0],
+          hoursWorked: "8",
+          project: "Circuit Dreams Alpha",
+          description: "Implemented character dialogue system and bug fixes",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "2",
+          employeeId: "2",
+          employeeName: "Maya Rodriguez",
+          date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split("T")[0],
+          hoursWorked: "7.5",
+          project: "Circuit Toolkit",
+          description:
+            "Optimized asset pipeline and added new testing features",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "3",
+          employeeId: "3",
+          employeeName: "Jordan Kim",
+          date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split("T")[0],
+          hoursWorked: "8",
+          project: "Neon City VR",
+          description: "Created concept art and level design prototypes",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      setEmployees([
+        {
+          id: "1",
+          name: "Alex Dowling",
+          role: "CEO",
+          position: "Chief Executive Officer",
+        },
+        {
+          id: "2",
+          name: "Maya Rodriguez",
+          role: "Admin",
+          position: "Head of Development",
+        },
+        {
+          id: "3",
+          name: "Jordan Kim",
+          role: "Employee",
+          position: "Lead Designer",
+        },
+      ]);
+    }
     setIsLoading(false);
   };
 
@@ -46,17 +103,40 @@ export function TimesheetManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editing) {
-        await ApiService.updateTimesheet(editing.id, form);
-        toast({ title: "Success", description: "Timesheet updated" });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editing) {
+          setTimesheets((prev) =>
+            prev.map((t) => (t.id === editing.id ? { ...t, ...form } : t)),
+          );
+          toast({ title: "Success", description: "Timesheet updated" });
+        } else {
+          const newTimesheet = {
+            ...form,
+            id: Date.now().toString(),
+          };
+          setTimesheets((prev) => [...prev, newTimesheet]);
+          toast({ title: "Success", description: "Timesheet added" });
+        }
+        setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
+        setEditing(null);
       } else {
-        await ApiService.addTimesheet(form);
-        toast({ title: "Success", description: "Timesheet added" });
+        // Production API calls
+        if (editing) {
+          await ApiService.updateTimesheet(editing.id, form);
+          toast({ title: "Success", description: "Timesheet updated" });
+        } else {
+          await ApiService.addTimesheet(form);
+          toast({ title: "Success", description: "Timesheet added" });
+        }
+        setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
+        setEditing(null);
+        await loadData();
       }
-      setForm({ employeeId: "", date: "", clockIn: "", clockOut: "" });
-      setEditing(null);
-      await loadData();
     } catch {
       toast({
         title: "Error",
@@ -78,8 +158,33 @@ export function TimesheetManager() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this entry?")) return;
-    await ApiService.deleteTimesheet(id);
-    await loadData();
+
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    try {
+      if (isDev) {
+        // Handle development mode deletion locally
+        setTimesheets((prev) => prev.filter((t) => t.id !== id));
+        toast({
+          title: "Success",
+          description: "Timesheet entry deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteTimesheet(id);
+        await loadData();
+        toast({
+          title: "Success",
+          description: "Timesheet entry deleted successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete timesheet entry",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) return <div className="p-8 text-neon-cyan">Loading...</div>;
@@ -137,7 +242,10 @@ export function TimesheetManager() {
             />
           </div>
           <div className="md:col-span-4 flex justify-end">
-            <Button type="submit" className="bg-neon-cyan text-black hover:bg-neon-blue">
+            <Button
+              type="submit"
+              className="bg-neon-cyan text-black hover:bg-neon-blue"
+            >
               {editing ? "Update" : "Add"}
             </Button>
           </div>

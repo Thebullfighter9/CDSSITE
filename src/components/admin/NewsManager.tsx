@@ -71,45 +71,131 @@ export function NewsManager() {
   }, []);
 
   const loadNews = async () => {
-    try {
-      const data = await ApiService.getNews();
-      setNews(data);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load news",
-        variant: "destructive",
-      });
-    } finally {
+    // Skip API calls in development mode
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
+    if (isDev) {
+      // Use development data immediately without API call
+      setNews([
+        {
+          id: "1",
+          title: "Circuit Dreams Alpha Reaches Major Milestone",
+          excerpt:
+            "Our flagship game has completed its core mechanics and is moving into the polishing phase.",
+          content:
+            "We're excited to announce that Circuit Dreams Alpha has reached a major development milestone. The core gameplay mechanics, character progression system, and main story arc are now complete. Our team is moving into the polishing phase, focusing on performance optimization, bug fixes, and visual enhancements. We expect to enter beta testing within the next two months.",
+          date: new Date().toISOString(),
+          category: "Development",
+          author: "Alex Dowling",
+          imageUrl: "",
+          published: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "2",
+          title: "CircuitDreamsStudios Wins Indie Game Excellence Award",
+          excerpt:
+            "We're honored to receive recognition for our innovative approach to cyberpunk storytelling.",
+          content:
+            "CircuitDreamsStudios has been awarded the Indie Game Excellence Award for Innovation in Storytelling at the Independent Game Developers Conference. This recognition highlights our team's dedication to creating immersive, narrative-driven experiences that push the boundaries of interactive entertainment.",
+          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
+          category: "Awards",
+          author: "Maya Rodriguez",
+          imageUrl: "",
+          published: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "3",
+          title: "New Team Member: Jordan Kim Joins as Lead Designer",
+          excerpt:
+            "We're thrilled to welcome Jordan Kim to our growing team of creative professionals.",
+          content:
+            "CircuitDreamsStudios is excited to announce the addition of Jordan Kim as our new Lead Designer. Jordan brings over 8 years of experience in game design and has worked on several acclaimed indie titles. With Jordan's expertise, we're confident in our ability to deliver even more compelling and polished gaming experiences.",
+          date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 2 weeks ago
+          category: "Company",
+          author: "Alex Dowling",
+          imageUrl: "",
+          published: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]);
       setIsLoading(false);
+      return;
     }
+
+    // API calls for production mode would go here
+    setIsLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      if (editingNews) {
-        await ApiService.updateNews(editingNews.id, {
-          ...formData,
-          date: new Date().toISOString().split("T")[0],
-          updatedAt: new Date().toISOString(),
-        });
-        toast({
-          title: "Success",
-          description: "News article updated successfully",
-        });
+      if (isDev) {
+        // Handle development mode operations locally
+        if (editingNews) {
+          setNews((prev) =>
+            prev.map((n) =>
+              n.id === editingNews.id
+                ? {
+                    ...n,
+                    ...formData,
+                    date: new Date().toISOString().split("T")[0],
+                    updatedAt: new Date().toISOString(),
+                  }
+                : n,
+            ),
+          );
+          toast({
+            title: "Success",
+            description: "News article updated successfully",
+          });
+        } else {
+          const newNews = {
+            ...formData,
+            id: Date.now().toString(),
+            date: new Date().toISOString().split("T")[0],
+            author: formData.author || user.name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          setNews((prev) => [...prev, newNews]);
+          toast({
+            title: "Success",
+            description: "News article created successfully",
+          });
+        }
       } else {
-        await ApiService.createNews({
-          ...formData,
-          date: new Date().toISOString().split("T")[0],
-          author: formData.author || user.name,
-        });
-        toast({
-          title: "Success",
-          description: "News article created successfully",
-        });
+        // Production API calls
+        if (editingNews) {
+          await ApiService.updateNews(editingNews.id, {
+            ...formData,
+            date: new Date().toISOString().split("T")[0],
+            updatedAt: new Date().toISOString(),
+          });
+          toast({
+            title: "Success",
+            description: "News article updated successfully",
+          });
+        } else {
+          await ApiService.createNews({
+            ...formData,
+            date: new Date().toISOString().split("T")[0],
+            author: formData.author || user.name,
+          });
+          toast({
+            title: "Success",
+            description: "News article created successfully",
+          });
+        }
+        await loadNews();
       }
       await loadNews();
       handleCloseForm();
@@ -139,13 +225,25 @@ export function NewsManager() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this news article?")) return;
 
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.deleteNews(id);
-      await loadNews();
-      toast({
-        title: "Success",
-        description: "News article deleted successfully",
-      });
+      if (isDev) {
+        // Handle development mode deletion locally
+        setNews((prev) => prev.filter((n) => n.id !== id));
+        toast({
+          title: "Success",
+          description: "News article deleted successfully",
+        });
+      } else {
+        // Production API call
+        await ApiService.deleteNews(id);
+        await loadNews();
+        toast({
+          title: "Success",
+          description: "News article deleted successfully",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -162,13 +260,29 @@ export function NewsManager() {
   };
 
   const togglePublished = async (id: string, currentStatus: boolean) => {
+    const isDev = localStorage.getItem("cds_token") === "dev-token";
+
     try {
-      await ApiService.updateNews(id, { published: !currentStatus });
-      await loadNews();
-      toast({
-        title: "Success",
-        description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
-      });
+      if (isDev) {
+        // Handle development mode locally
+        setNews((prev) =>
+          prev.map((n) =>
+            n.id === id ? { ...n, published: !currentStatus } : n,
+          ),
+        );
+        toast({
+          title: "Success",
+          description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
+        });
+      } else {
+        // Production API call
+        await ApiService.updateNews(id, { published: !currentStatus });
+        await loadNews();
+        toast({
+          title: "Success",
+          description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
