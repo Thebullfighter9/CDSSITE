@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "./mongo";
+import { ObjectId } from "mongodb";
 import { verifyToken } from "./auth";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -23,7 +24,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const db = await getDb();
     const currentUser = await db.collection("users").findOne({
-      $or: [{ _id: payload.id }, { email: payload.email }],
+      $or: [
+        payload.id
+          ? { _id: new ObjectId(payload.id) }
+          : { email: payload.email },
+        { email: payload.email },
+      ],
     });
 
     if (!currentUser) {
@@ -43,7 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (id) {
         const user = await db
           .collection("users")
-          .findOne({ _id: id }, { projection: { password: 0 } });
+          .findOne(
+            { _id: new ObjectId(id as string) },
+            { projection: { password: 0 } },
+          );
 
         if (!user) {
           return res.status(404).json({ error: "User not found" });
@@ -165,7 +174,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       delete updates._id;
 
       const result = await db.collection("users").updateOne(
-        { _id: id },
+        { _id: new ObjectId(id as string) },
         {
           $set: {
             ...updates,
@@ -181,7 +190,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const updatedUser = await db
         .collection("users")
-        .findOne({ _id: id }, { projection: { password: 0 } });
+        .findOne(
+          { _id: new ObjectId(id as string) },
+          { projection: { password: 0 } },
+        );
 
       return res.status(200).json(updatedUser);
     }
@@ -203,7 +215,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      const result = await db.collection("users").deleteOne({ _id: id });
+      const result = await db
+        .collection("users")
+        .deleteOne({ _id: new ObjectId(id as string) });
 
       if (result.deletedCount === 0) {
         return res.status(404).json({ error: "User not found" });
