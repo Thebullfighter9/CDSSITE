@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "./mongo";
+import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -149,7 +150,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const db = await getDb();
       const currentUser = await db.collection("users").findOne({
-        $or: [{ _id: payload.id }, { email: payload.email }],
+        $or: [
+          payload.id
+            ? { _id: new ObjectId(payload.id) }
+            : { email: payload.email },
+          { email: payload.email },
+        ],
       });
 
       if (!currentUser) {
@@ -219,12 +225,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const db = await getDb();
-      const user = await db
-        .collection("users")
-        .findOne(
-          { $or: [{ _id: payload.id }, { email: payload.email }] },
-          { projection: { password: 0 } },
-        );
+      const user = await db.collection("users").findOne(
+        {
+          $or: [
+            payload.id
+              ? { _id: new ObjectId(payload.id) }
+              : { email: payload.email },
+            { email: payload.email },
+          ],
+        },
+        { projection: { password: 0 } },
+      );
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
