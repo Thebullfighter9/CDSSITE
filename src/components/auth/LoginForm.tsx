@@ -191,14 +191,13 @@ export function LoginForm() {
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-foreground/60">Demo credentials:</p>
-                <div className="mt-2 space-y-1 text-xs text-foreground/50">
-                  <div>Admin: admin@circuitdreamsstudios.com / admin123</div>
-                  <div>Dev: dev@circuitdreamsstudios.com / dev123</div>
-                  <div>
-                    Designer: designer@circuitdreamsstudios.com / design123
-                  </div>
-                </div>
+                <p className="text-xs text-foreground/40">
+                  Access restricted to authorized CircuitDreamsStudios personnel
+                  only.
+                </p>
+                <p className="text-xs text-foreground/30 mt-1">
+                  Contact your administrator for account access.
+                </p>
               </div>
             </form>
           </CardContent>
